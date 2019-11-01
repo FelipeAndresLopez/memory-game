@@ -63,6 +63,9 @@ h3 {
 
 .blue.light {
   background: #2196f3b3;
+  box-shadow: 1px 1px 10px 5px #2196f3;
+  z-index: 1;
+  position: relative;
 }
 
 .red {
@@ -71,6 +74,9 @@ h3 {
 
 .red.light {
   background: #f44336b3;
+  box-shadow: 1px 1px 10px 5px #f44336;
+  z-index: 1;
+  position: relative;
 }
 
 .orange {
@@ -79,6 +85,9 @@ h3 {
 
 .orange.light {
   background: #ffc107b3;
+  box-shadow: 1px 1px 10px 5px #ffc107;
+  z-index: 1;
+  position: relative;
 }
 
 .green {
@@ -87,6 +96,9 @@ h3 {
 
 .green.light {
   background: #4caf50b3;
+  box-shadow: 1px 1px 10px 5px #4caf50;
+  z-index: 1;
+  position: relative;
 }
 
 .btn-start {
