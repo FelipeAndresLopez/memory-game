@@ -47,7 +47,6 @@ class Game {
 
   nextLevel() {
     this.subLevel = 0;
-    this.nombreAtributo = "valor";
     this.lightSecuence();
     this.addClickEvents();
   }
