@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Memory game</title>
+    <style>
+      * {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      body {
+        margin: 0;
+        background-color: beige;
+      }
+
+      section {
+        padding: 0 10%;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      h1,
+      h3 {
+        color: #455a64;
+      }
+
+      .align-right {
+        text-align: right;
+      }
+      .align-center {
+        text-align: center;
+      }
+
+      .game-container {
+        display: flex;
+        align-items: center;
+        height: 60vh;
+        margin: 0;
+      }
+
+      .gameboard {
+        height: 100vh;
+        width: 100vh;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 0 auto;
+        max-height: 60vh;
+        max-width: 60vh;
+      }
+
+      .color {
+        width: 50%;
+        height: 50%;
+        display: inline-block;
+      }
+
+      .left {
+        float: left;
+      }
+
+      .right {
+        float: left;
+      }
+
+      .blue {
+        background: #2196f3;
+      }
+
+      .blue.light {
+        background: #2196f3b3;
+      }
+
+      .red {
+        background: #f44336;
+      }
+
+      .red.light {
+        background: #f44336b3;
+      }
+
+      .orange {
+        background: #ffc107;
+      }
+
+      .orange.light {
+        background: #ffc107b3;
+      }
+
+      .green {
+        background: #4caf50;
+      }
+
+      .green.light {
+        background: #4caf50b3;
+      }
+
+      .btn-start {
+        width: 400px;
+        height: 100px;
+        background: #607d8b;
+        color: white;
+        font-size: 2.5rem;
+        position: absolute;
+        top: 54%;
+        left: calc(50% - 200px);
+        border: none;
+      }
+
+      .hide {
+        display: none;
+      }
+
+      .level-counter {
+        color: #ffffff;
+        display: inline-block;
+        background-color: #37474f;
+        padding: 12px;
+        border-radius: 10px;
+      }
+
+      .highlight-text {
+        text-shadow: #fff 0px 0px 5px, #fff 0px 0px 10px, #fff 0px 0px 15px,
+          #ff2d95 0px 0px 20px, #ff2d95 0px 0px 30px, #ff2d95 0px 0px 40px,
+          #ff2d95 0px 0px 50px, #ff2d95 0px 0px 75px;
+      }
+    </style>
+  </head>
+  <body>
+    <section>
+      <div><h1>Memory Game</h1></div>
+      <div>
+        <h3>Instructions</h3>
+        <p>Pick the color sequence as these are appearing.</p>
+      </div>
+      <div class="align-center">
+        <div class="level-counter align-center">
+          <label id="levelCounter">Level 1</label>
+        </div>
+      </div>
+    </section>
+    <br />
+    <div class="game-container">
+      <div class="gameboard">
+        <div id="blue" class="color blue left" data-color="blue"></div>
+        <div id="red" class="color red right" data-color="red"></div>
+        <div id="orange" class="color orange left" data-color="orange"></div>
+        <div id="green" class="color green right" data-color="green"></div>
+        <button id="startButton" class="btn-start" onclick="startNewGame()">
+          Play
+        </button>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <script>
+      const blue = document.getElementById("blue");
+      const red = document.getElementById("red");
+      const orange = document.getElementById("orange");
+      const green = document.getElementById("green");
+      const startButton = document.getElementById("startButton");
+      const LAST_LEVEL = 10;
+
+      class Game {
+        constructor() {
+          this.startGame = this.startGame.bind(this);
+          this.startGame();
+          this.generateSecuence();
+          setTimeout(() => {
+            this.nextLevel();
+          }, 500);
+        }
+
+        startGame() {
+          this.pickColor = this.pickColor.bind(this);
+          this.nextLevel = this.nextLevel.bind(this);
+          this.toggleStartButton();
+          this.level = 1;
+          this.colors = {
+            blue,
+            red,
+            orange,
+            green
+          };
+
+          this.levelCounter = document.getElementById("levelCounter");
+          this.changeLevelTag(this.level);
+        }
+
+        toggleStartButton() {
+          if (startButton.classList.contains("hide")) {
+            startButton.classList.remove("hide");
+          } else {
+            startButton.classList.add("hide");
+          }
+        }
+
+        generateSecuence() {
+          this.secuence = new Array(LAST_LEVEL)
+            .fill(0)
+            .map(n => Math.floor(Math.random() * 4));
+        }
+
+        nextLevel() {
+          this.subLevel = 0;
+          this.nombreAtributo = "valor";
+          this.lightSecuence();
+          this.addClickEvents();
+        }
+
+        changeLevelTag(level) {
+          this.levelCounter.classList.add("highlight-text");
+          setTimeout(() => {
+            this.levelCounter.classList.remove("highlight-text");
+          }, 500);
+          this.levelCounter.textContent = `Level ${level}`;
+        }
+
+        parseNumberToColor(number) {
+          switch (number) {
+            case 0:
+              return "blue";
+            case 1:
+              return "red";
+            case 2:
+              return "orange";
+            case 3:
+              return "green";
+          }
+        }
+
+        parseColorToNumber(color) {
+          switch (color) {
+            case "blue":
+              return 0;
+            case "red":
+              return 1;
+            case "orange":
+              return 2;
+            case "green":
+              return 3;
+          }
+        }
+
+        lightSecuence() {
+          for (let index = 0; index < this.level; index++) {
+            const color = this.parseNumberToColor(this.secuence[index]);
+            setTimeout(() => this.turnOnColor(color), 1000 * index);
+          }
+        }
+
+        turnOnColor(color) {
+          this.colors[color].classList.add("light");
+          setTimeout(() => this.turnOffColor(color), 350);
+        }
+
+        turnOffColor(color) {
+          this.colors[color].classList.remove("light");
+        }
+
+        addClickEvents() {
+          this.colors.blue.addEventListener("click", this.pickColor);
+          this.colors.green.addEventListener("click", this.pickColor);
+          this.colors.red.addEventListener("click", this.pickColor);
+          this.colors.orange.addEventListener("click", this.pickColor);
+        }
+
+        removeClickEvents() {
+          this.colors.blue.removeEventListener("click", this.pickColor);
+          this.colors.green.removeEventListener("click", this.pickColor);
+          this.colors.red.removeEventListener("click", this.pickColor);
+          this.colors.orange.removeEventListener("click", this.pickColor);
+        }
+
+        pickColor(ev) {
+          const colorName = ev.target.dataset.color;
+          const colorNumber = this.parseColorToNumber(colorName);
+          this.turnOnColor(colorName);
+
+          if (colorNumber === this.secuence[this.subLevel]) {
+            this.subLevel++;
+            if (this.subLevel === this.level) {
+              this.level++;
+              this.changeLevelTag(this.level);
+              if (this.level === LAST_LEVEL + 1) {
+                this.gameWon();
+              } else {
+                setTimeout(this.nextLevel, 1500);
+              }
+            }
+          } else {
+            this.gameover();
+          }
+        }
+
+        gameWon() {
+          swal(
+            "Congratulations",
+            "You've won, now your memory is a bit better.",
+            "success"
+          ).then(() => {
+            this.startGame();
+          });
+        }
+
+        gameover() {
+          swal(
+            "Gameover",
+            "You've lost in this time, but don't give up.",
+            "error"
+          ).then(() => {
+            this.removeClickEvents();
+            this.startGame();
+          });
+        }
+      }
+
+      function startNewGame() {
+        window.game = new Game();
+      }
+    </script>
+  </body>
+</html>
